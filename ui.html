@@ -1,0 +1,199 @@
+<div class="input">
+  <div class="caption">sheetId</div>
+  <input type="text" id="sheetId" name="sheetId" required
+   size="20" value="" placeholder="">
+</div>
+<div class="input">
+  <div class="caption">range</div>
+  <input type="text" id="range" name="range" required
+   size="20" value="" placeholder="シート名!A1:A10">
+</div>
+<div class="button">
+  <a href="#" class="btn_a" id="getLocalApi">サービスアカウントからデータ取得</a>
+</div>
+<div id="loader">
+  <div>
+    <div class="loader">Loading...</div>
+    <div class="caption">データ取得中</div>
+  </div>
+</div>
+<script>
+const loader = document.getElementById('loader');
+document.getElementById('getLocalApi').onclick = () => {
+  loader.classList.add('fadeIn');
+  const sheetId = document.getElementById('sheetId').value;
+  const range = document.getElementById('range').value || 'シート1';
+  const request = new XMLHttpRequest()
+  request.open('GET', `[API_URL]/${sheetId}/${range}`)
+  request.setRequestHeader('Content-Type', 'application/json');
+  request.setRequestHeader('x-api-key', '[APIキー]');
+  request.responseType = 'json'
+  request.onerror = function(e){
+    console.log(e);
+    alert('データが取得できませんでした');
+    loader.classList.remove('fadeIn');
+  };
+  request.onload = () => {
+    if (request.status === 200) {
+      parent.postMessage({ pluginMessage: {
+        type: 'setData',
+        response: request.response,
+      }}, '*')
+    }
+    loader.classList.remove('fadeIn');
+  };
+  request.send()
+}
+</script>
+<style>
+.caption {
+  font-size: 12px;
+  font-weight: bold;
+}
+.input input {
+  width: 100%;
+  margin: 5px 0;
+}
+.button {
+  text-align: center;
+  margin-top: 10px;;
+}
+a.btn_a {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 24px;
+  position: relative;
+  background: #228bc8;
+  border: 1px solid #228bc8;
+  border-radius: 12px;
+  box-sizing: border-box;
+  padding: 0 35px 0 25px;
+  color: #fff;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  line-height: 1.3;
+  text-align: left;
+  text-decoration: none;
+  transition-duration: 0.3s;
+}
+a.btn_a:before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border: 0;
+  border-top: 1px solid #fff;
+  border-right: 1px solid #fff;
+  transform: rotate(45deg);
+  position: absolute;
+  top: 50%;
+  right: 18px;
+  margin-top: -4px;
+}
+a.btn_a:hover {
+  background: #fff;
+  color: #228bc8;
+}
+a.btn_a:hover:before {
+  border-top: 2px solid #228bc8;
+  border-right: 2px solid #228bc8;
+}
+#loader {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  margin: auto;
+  text-align: center;
+  transition-property: opacity; 
+  transition-duration: 0.5s;
+  opacity: 0;
+  z-index: -1;
+  background-color: #ffffff;
+}
+#loader.fadeIn {
+  opacity: 1;
+  z-index: 1;
+  display: flex;
+}
+.loader,
+.loader:before,
+.loader:after {
+  border-radius: 50%;
+}
+.loader {
+  color: #228bc8;
+  font-size: 2px;
+  text-indent: -99999em;
+  margin: 10px auto;
+  position: relative;
+  width: 10em;
+  height: 10em;
+  box-shadow: inset 0 0 0 2em;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+}
+.loader:before,
+.loader:after {
+  position: absolute;
+  content: '';
+}
+.loader:before {
+  width: 5.2em;
+  height: 10.2em;
+  background: #ffffff;
+  border-radius: 10.2em 0 0 10.2em;
+  top: -0.1em;
+  left: -0.1em;
+  -webkit-transform-origin: 5.1em 5.1em;
+  transform-origin: 5.1em 5.1em;
+  -webkit-animation: load2 1.5s infinite ease 1s;
+  animation: load2 1.5s infinite ease 1s;
+}
+.loader:after {
+  width: 5.2em;
+  height: 10.2em;
+  background: #ffffff;
+  border-radius: 0 10.2em 10.2em 0;
+  top: -0.1em;
+  left: 4.9em;
+  -webkit-transform-origin: 0.1em 5.1em;
+  transform-origin: 0.1em 5.1em;
+  -webkit-animation: load2 1.5s infinite ease;
+  animation: load2 1.5s infinite ease;
+}
+@keyframes fadeIn {
+  from {
+  	opacity: 0;
+  }
+  to {
+ 	opacity: 1;
+  }
+}
+@-webkit-keyframes load2 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@keyframes load2 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+</style>
