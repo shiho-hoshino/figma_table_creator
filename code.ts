@@ -36,27 +36,26 @@ figma.ui.onmessage = async msg => {
 
       /**
        * @param obj 行
-       * @param textData 行のテキスト
-       * @param num 列番号
+       * @param nodes 最終的なreturn値
        */
-      const setText = function(obj, textData, characterNodes=[]){
+      const getColNodes = function(obj, nodes=[]){
         if (Array.isArray(obj)) {
           obj.map((node :any, index) => {
             if (node.name.indexOf('#col') != -1) {
-              characterNodes.push(node);
+              nodes.push(node);
             } else if (node.children) {
-              setText(node.children, textData, characterNodes);
+              getColNodes(node.children, nodes);
             }
           });
         } else {
           if (obj.name.indexOf('#col') != -1) {
-            characterNodes.push(obj);
+            nodes.push(obj);
           } else if (obj.children) {
-            setText(obj.children, textData, characterNodes);
+            getColNodes(obj.children, nodes);
           }
         }
 
-        return characterNodes;
+        return nodes;
       }
 
       const cloneNodes: SceneNode[] = [];
@@ -65,12 +64,14 @@ figma.ui.onmessage = async msg => {
         "style": "Regular"
       }).then(() => {
         selectionNode.map((node, index) => {
+          // スプレッドシートの行ごとに処理
           values.map((value, i) => {
-            // nodeをデータ分cloneし配列に追加
+            // nodeをcloneし配列に追加
             cloneNodes.push(node.clone())
-            // cloneしたnodeにテキストを反映
-            const characterNodes = setText(cloneNodes[i], value);
-            characterNodes.map((node, i) => {
+            // cloneしたnodeからテキストを反映するnode要素を取得
+            const colNodes = getColNodes(cloneNodes[i]);
+            // 指定要素にテキストを反映
+            colNodes.map((node, i) => {
               const text = value[i] || '';
               changeText(node, text);
             });
