@@ -14,10 +14,6 @@ figma.ui.onmessage = async msg => {
     const selectionNode = currentPage.selection;
     
     if (selectionNode.length > 0) {
-      const x = selectionNode[0].x;
-      const y = selectionNode[0].y + selectionNode[0].height + 20;
-
-
       /**
        * @param node テキストを反映するNode
        * @param text 変更するテキスト
@@ -80,7 +76,13 @@ figma.ui.onmessage = async msg => {
         
         // フレーム作成
         const frame = figma.createFrame();
+  
+        // フレームの位置を設定
         figma.currentPage.selection = [frame];
+  
+        // フレームの位置を設定
+        const x = selectionNode[0].x;
+        const y = selectionNode[0].y + selectionNode[0].height + 20;
         frame.x = x;
         frame.y = y;
 
